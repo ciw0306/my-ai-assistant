@@ -30,6 +30,14 @@ for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+# 在获取用户输入之前，先进行“记忆修剪”
+# 设定最大保留消息数量：1条系统提示词 + 10条消息（即5轮对话）
+MAX_HISTORY = 11  
+
+if len(st.session_state.messages) > MAX_HISTORY:
+    # 保留第0条（系统人设），并保留最近 MAX_HISTORY-1 条消息
+    st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-(MAX_HISTORY-1):]
+
 if prompt := st.chat_input("有什么我可以帮你的吗？"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
